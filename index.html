@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSWDO | Management System</title>
+    <style>
+        :root {
+            --primary-blue: #2c3e50;
+            --accent-blue: #3498db;
+            --bg-light: #f4f7f6;
+            --white: #ffffff;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --border: #dcdde1;
+            --warning: #f39c12;
+            --minor-clr: #e67e22;
+            --adult-clr: #2ecc71;
+            --senior-clr: #9b59b6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            overflow-x: hidden;
+            color: #2f3640;
+        }
+
+        /* SPLASH SCREEN & MODULE LOADER */
+        #splash-screen,
+        #module-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: var(--white);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease-out;
+        }
+
+        #module-loader {
+            background: rgba(255, 255, 255, 0.9);
+            display: none;
+            z-index: 10005;
+        }
+
+        .splash-logo {
+            width: 150px;
+            animation: pulse 2s infinite ease-in-out;
+            margin-bottom: 20px;
+        }
+
+        .loader {
+            width: 35px;
+            height: 35px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        #loader-text {
+            margin-top: 15px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        /* LOGIN SECTION */
+        #login-section {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        }
+
+        .login-card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-card h2 {
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+        }
+
+        .login-card input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            outline: none;
+        }
+
+        .login-btn,
+        .btn-action {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+
+        .login-btn:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
+        }
+
+        .error-msg {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            display: none;
+            background: #fadbd8;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        /* NAVIGATION & LAYOUT */
+        #main-content,
+        #case-study-module {
+            display: none;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        nav {
+            background: var(--primary-blue);
+            color: white;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-logo {
+            font-weight: bold;
+            letter-spacing: 1px;
+            font-size: 1.2rem;
+        }
+
+        .btn-logout {
+            color: #ff7675;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: 0.2s;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* FORM DESIGN */
+        .form-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-header {
+            background: var(--primary-blue);
+            color: white;
+            padding: 20px 30px;
+        }
+
+        .form-body {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #7f8c8d;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .input-group input,
+        .input-group select {
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            color: var(--primary-blue);
+            transition: 0.2s;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        /* TABS & TABLES */
+        .tab-btn-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: #ebedef;
+            padding: 5px;
+            border-radius: 8px;
+            width: fit-content;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: transparent;
+            color: #7f8c8d;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .tab-btn.active {
+            background: var(--white);
+            color: var(--accent-blue);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .utility-bar {
+            background: #dfe6e9;
+            padding: 15px 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn-util {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            transition: 0.2s;
+        }
+
+        .btn-export {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-import {
+            background: var(--warning);
+            color: white;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1100px;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            color: #7f8c8d;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            padding: 15px;
+            text-align: left;
+            border-bottom: 2px solid #eee;
+        }
+
+        .data-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+        }
+
+        /* STATS CARDS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: 0.3s ease;
+            border: 1px solid #eee;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--accent-blue);
+        }
+
+        .stat-total::before {
+            background: var(--primary-blue);
+        }
+
+        .stat-minor::before {
+            background: var(--minor-clr);
+        }
+
+        .stat-adult::before {
+            background: var(--adult-clr);
+        }
+
+        .stat-senior::before {
+            background: var(--senior-clr);
+        }
+
+        .stat-val {
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 10px;
+            color: var(--primary-blue);
+        }
+
+        .stat-lab {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #95a5a6;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .list-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .category-list {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            border: 1px solid #f0f0f0;
+        }
+
+        .category-list h4 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f8f9fa;
+            color: var(--primary-blue);
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .ul-records {
+            list-style: none;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .ul-records li {
+            padding: 12px 15px;
+            background: #f8f9fa;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            border-left: 4px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* --- MODULE TRANSITIONS --- */
+        /* --- ENHANCED MODULE TRANSITIONS --- */
+        .zoom-in {
+            animation: zoomIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            display: block !important;
+        }
+
+        .zoom-out {
+            animation: zoomOut 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.95);
+                opacity: 0;
+                filter: blur(5px);
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+                filter: blur(0);
+            }
+        }
+
+        @keyframes zoomOut {
+            from {
+                transform: scale(1);
+                opacity: 1;
+                filter: blur(0);
+            }
+
+            to {
+                transform: scale(1.05);
+                opacity: 0;
+                filter: blur(10px);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutLeft {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+
+            to {
+                transform: translateX(-100px);
+                opacity: 0;
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-100px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+
+            to {
+                transform: translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* --- TOAST & MODALS --- */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+        }
+
+        .toast {
+            background: white;
+            padding: 16px 25px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 5px solid var(--accent-blue);
+            animation: slideInToast 0.4s ease-out forwards, fadeOutToast 0.4s ease-in 2.6s forwards;
+            min-width: 300px;
+        }
+
+        .toast.success {
+            border-left-color: var(--success);
+        }
+
+        .toast.danger {
+            border-left-color: var(--danger);
+        }
+
+        .toast.warning {
+            border-left-color: var(--warning);
+        }
+
+        #confirm-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+        }
+
+        .confirm-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            animation: pulseFade 0.3s ease;
+        }
+
+        .confirm-btns {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        @keyframes slideInToast {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOutToast {
+            to {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+        }
+
+        @keyframes pulseFade {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .btn-save {
+            background: var(--success);
+            width: auto;
+            align-self: flex-end;
+            padding: 12px 40px;
+            margin-right: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .form-body {
+                grid-template-columns: 1fr;
+            }
+
+            .full-width {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="splash-screen">
+        <img src="CSWD logo.png" alt="CSWDO Logo" class="splash-logo" onerror="this.style.display='none'">
+        <div class="loader"></div>
+        <p style="margin-top: 15px; color: #555; font-weight: 500;">Connecting to Server...</p>
+    </div>
+
+    <div id="module-loader">
+        <div class="loader"></div>
+        <p id="loader-text">Opening Module...</p>
+    </div>
+
+    <div id="login-section">
+        <div class="login-card">
+            <img src="CSWD logo.png" style="width: 80px; margin-bottom: 15px;" onerror="this.style.display='none'">
+            <h2>Staff Login</h2>
+            <div id="login-loading" style="display: none; margin-bottom: 15px;">
+                <div class="loader" style="width: 25px; height: 25px; margin: 0 auto;"></div>
+                <p style="margin-top: 10px; color: var(--accent-blue); font-weight: bold;">Verifying credentials...</p>
+            </div>
+            <div id="error-msg" class="error-msg">Invalid username or password!</div>
+            <div id="login-inputs">
+                <input type="text" id="username" placeholder="Username" autocomplete="off">
+                <input type="password" id="password" placeholder="Password">
+                <button onclick="handleLogin()" class="login-btn">LOGIN</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-content">
+        <nav>
+            <div class="nav-logo">CSWDO PORTAL</div>
+            <div onclick="handleLogout()" class="btn-logout">Logout</div>
+        </nav>
+        <div class="container">
+            <h1 style="font-size: 2.2rem; margin-bottom: 10px;">Welcome, Admin</h1>
+            <p style="color: #7f8c8d; margin-bottom: 40px;">Select a management module to proceed.</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px;">
+                <div style="background: var(--white); padding: 40px; border-radius: 15px; box-shadow: var(--shadow); cursor: pointer; border: 1px solid transparent; transition: 0.3s;"
+                    onclick="openModule('case-study-module')" onmouseover="this.style.borderColor='var(--accent-blue)'"
+                    onmouseout="this.style.borderColor='transparent'">
+                    <div style="font-size: 3.5rem; margin-bottom: 20px; color: var(--accent-blue);">📄</div>
+                    <h3 style="font-size: 1.4rem; margin-bottom: 10px;">Social Case Study</h3>
+                    <p style="color: #7f8c8d; line-height: 1.6;">Securely encode client data and manage case study
+                        records with data synchronization features.</p>
+                    <button class="login-btn" style="width: auto; padding: 10px 25px; margin-top: 20px;">Open
+                        Module</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="case-study-module">
+        <nav>
+            <div class="nav-logo">SOCIAL CASE STUDY MODULE</div>
+            <div onclick="closeModule()"
+                style="cursor:pointer; font-weight: bold; background: rgba(255,255,255,0.1); padding: 8px 20px; border-radius: 8px;">
+                ← BACK TO HUB</div>
+        </nav>
+
+        <div class="container">
+            <div class="tab-btn-container">
+                <button class="tab-btn active" id="btn-enc"
+                    onclick="showTab('encoding-section', 'btn-enc')">Encoding</button>
+                <button class="tab-btn" id="btn-rec" onclick="showTab('records-section', 'btn-rec')">View
+                    Records</button>
+                <button class="tab-btn" id="btn-sta" onclick="showTab('stats-section', 'btn-sta')">Statistics</button>
+            </div>
+
+            <div id="encoding-section" class="tab-content">
+                <div class="form-card">
+                    <div class="form-header">
+                        <h3 style="margin:0;">Client Case Enrollment</h3>
+                        <p style="font-size: 0.85rem; opacity: 0.8; margin-top: 5px;">Input comprehensive client data
+                            into the system registry.</p>
+                    </div>
+                    <div class="form-body">
+                        <div class="input-group"><label>Date of Case Study</label><input type="date" id="f-date"></div>
+                        <div class="input-group"><label>Full Name of Client</label><input type="text" id="f-name"
+                                placeholder="First M. Last"></div>
+                        <div class="input-group"><label>Age</label><input type="number" id="f-age" placeholder="00">
+                        </div>
+                        <div class="input-group">
+                            <label>Gender</label>
+                            <select id="f-gender">
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                        <div class="input-group full-width"><label>Barangay Address</label><input type="text"
+                                id="f-barangay" placeholder="Barangay Name"></div>
+                        <div class="input-group full-width"><label>Assigned Agency</label><input type="text"
+                                id="f-agency" placeholder="Agency Name"></div>
+                        <div class="input-group"><label>Prepared By</label><input type="text" id="f-prepared"
+                                placeholder="Staff Full Name"></div>
+                        <div class="input-group"><label>Noted By</label><input type="text" id="f-noted"
+                                placeholder="Supervisor/Head Name"></div>
+                    </div>
+                    <button class="btn-action btn-save" onclick="saveRecord()">SAVE CASE RECORD</button>
+                </div>
+            </div>
+
+            <div id="records-section" class="tab-content hidden">
+
+                <!-- NEW FILTER TABS -->
+                <div class="tab-btn-container" style="margin-bottom:15px;">
+                    <button class="tab-btn active" onclick="filterRecords('all', this)">All</button>
+                    <button class="tab-btn" onclick="filterRecords('minor', this)">Minors</button>
+                    <button class="tab-btn" onclick="filterRecords('adult', this)">Adults</button>
+                    <button class="tab-btn" onclick="filterRecords('senior', this)">Seniors</button>
+                </div>
+
+                <div class="utility-bar">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span style="font-size: 0.9rem; font-weight: bold; color: var(--primary-blue);">DATA
+                            SYNC:</span>
+                        <button class="btn-util btn-export" onclick="exportData()">Export Backup (.json)</button>
+                    </div>
+                    <div style="border-left: 2px solid #ccc; height: 25px;"></div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <input type="file" id="importFile" accept=".json">
+                        <button class="btn-util btn-import" onclick="importData()">Import File</button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Name</th>
+                                <th>Age</th>
+                                <th>Gender</th>
+                                <th>Barangay</th>
+                                <th>Agency</th>
+                                <th>Prepared By</th>
+                                <th>Noted By</th>
+                                <th style="text-align:center;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="records-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="pagination-controls"
+                style="display:none; justify-content:center; align-items:center; gap:10px; margin-top:15px;">
+                <button class="btn-util" onclick="prevPage()">Prev</button>
+                <span id="page-info" style="font-weight:bold;">Page 1</span>
+                <button class="btn-util" onclick="nextPage()">Next</button>
+            </div>
+
+            <div id="stats-section" class="tab-content hidden">
+                <div class="stats-grid">
+                    <div class="stat-card stat-total">
+                        <div class="stat-val" id="stat-total">0</div>
+                        <div class="stat-lab">Total Cases</div>
+                    </div>
+                    <div class="stat-card stat-male">
+                        <div class="stat-val" id="stat-male" style="color:#3498db">0</div>
+                        <div class="stat-lab">Male Clients</div>
+                    </div>
+                    <div class="stat-card stat-female">
+                        <div class="stat-val" id="stat-female" style="color:#e84393">0</div>
+                        <div class="stat-lab">Female Clients</div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card stat-minor">
+                        <div class="stat-val" id="stat-minors">0</div>
+                        <div class="stat-lab">Minors (0-17)</div>
+                    </div>
+                    <div class="stat-card stat-adult">
+                        <div class="stat-val" id="stat-adults">0</div>
+                        <div class="stat-lab">Adults (18-59)</div>
+                    </div>
+                    <div class="stat-card stat-senior">
+                        <div class="stat-val" id="stat-seniors">0</div>
+                        <div class="stat-lab">Seniors (60+)</div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h4>Monthly Case Trends</h4>
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+
+                    <div class="stat-card">
+                        <h4>Cases per Barangay</h4>
+                        <canvas id="barangayChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h4>Top Agencies</h4>
+                        <canvas id="agencyChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="list-container">
+                    <div class="category-list">
+                        <h4><span class="dot" style="background:#3498db;"></span> Prepared By Count</h4>
+                        <ul id="prepared-list" class="ul-records"></ul>
+                    </div>
+
+                    <div class="category-list">
+                        <h4><span class="dot" style="background:#e67e22;"></span> Noted By Count</h4>
+                        <ul id="noted-list" class="ul-records"></ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <div id="confirm-modal">
+        <div class="confirm-card">
+            <h3 id="confirm-title" style="margin-bottom: 10px;">Are you sure?</h3>
+            <p id="confirm-msg" style="color: #666; font-size: 0.9rem;">This action cannot be undone.</p>
+            <div class="confirm-btns">
+                <button id="confirm-cancel" class="btn-util" style="background:#eee; flex:1;">Cancel</button>
+                <button id="confirm-ok" class="btn-util"
+                    style="background:var(--danger); color:white; flex:1;">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+
+        let charts = {};
+
+        function renderCharts(records) {
+
+            if (!records.length) return;
+
+            // Destroy old charts safely
+            for (let key in charts) {
+                if (charts[key]) charts[key].destroy();
+            }
+
+            // ---------- MONTHLY ----------
+            const monthly = {};
+
+            records.forEach(r => {
+                if (!r.date || r.date.length < 7) return;
+                const month = r.date.slice(0, 7);
+                monthly[month] = (monthly[month] || 0) + 1;
+            });
+
+            const months = Object.keys(monthly).sort();
+
+            charts.monthly = new Chart(document.getElementById('monthlyChart'), {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Cases',
+                        data: months.map(m => monthly[m]),
+                        tension: 0.3
+                    }]
+                }
+            });
+
+            // ---------- BARANGAY ----------
+            const barangayCount = {};
+
+            records.forEach(r => {
+                if (!r.barangay) return;
+                barangayCount[r.barangay] = (barangayCount[r.barangay] || 0) + 1;
+            });
+
+            const bKeys = Object.keys(barangayCount);
+
+            charts.barangay = new Chart(document.getElementById('barangayChart'), {
+                type: 'bar',
+                data: {
+                    labels: bKeys,
+                    datasets: [{
+                        label: 'Cases',
+                        data: bKeys.map(k => barangayCount[k])
+                    }]
+                }
+            });
+
+            // ---------- AGENCY ----------
+            const agencyCount = {};
+
+            records.forEach(r => {
+                if (!r.agency) return;
+                agencyCount[r.agency] = (agencyCount[r.agency] || 0) + 1;
+            });
+
+            const aKeys = Object.keys(agencyCount);
+
+            charts.agency = new Chart(document.getElementById('agencyChart'), {
+                type: 'bar',
+                data: {
+                    labels: aKeys,
+                    datasets: [{
+                        label: 'Cases',
+                        data: aKeys.map(k => agencyCount[k])
+                    }]
+                }
+            });
+        }
+
+        (function () {
+            function detectDevTools() {
+                const threshold = 160;
+                if (
+                    window.outerWidth - window.innerWidth > threshold ||
+                    window.outerHeight - window.innerHeight > threshold
+                ) {
+                    triggerSecurity();
+                }
+            }
+
+            function triggerSecurity() {
+                alert("Developer tools detected. Closing application.");
+                window.location.href = "about:blank";
+            }
+
+            // Run detection repeatedly
+            setInterval(detectDevTools, 1000);
+
+            // Disable right click
+            document.addEventListener('contextmenu', e => e.preventDefault());
+
+            // Disable key shortcuts
+            document.addEventListener('keydown', function (e) {
+                if (
+                    e.key === "F12" ||
+                    (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key)) ||
+                    (e.ctrlKey && e.key === 'U')
+                ) {
+                    e.preventDefault();
+                    triggerSecurity();
+                }
+            });
+        })();
+
+        const AUTH = { u: "YWRtaW4=", p: "Y3N3ZG8xMjM=" };
+
+        // --- ALERT ENGINE ---
+        function showAlert(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const icons = { success: '✅', danger: '❌', warning: '⚠️' };
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span>${icons[type] || '🔔'}</span> <span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function showConfirm(title, msg, onConfirm) {
+            const modal = document.getElementById('confirm-modal');
+            document.getElementById('confirm-title').innerText = title;
+            document.getElementById('confirm-msg').innerText = msg;
+            modal.style.display = 'flex';
+            document.getElementById('confirm-ok').onclick = () => { onConfirm(); modal.style.display = 'none'; };
+            document.getElementById('confirm-cancel').onclick = () => { modal.style.display = 'none'; };
+        }
+
+        // --- AUTHENTICATION ---
+        function handleLogin() {
+            const u = document.getElementById('username').value.trim();
+            const p = document.getElementById('password').value.trim();
+            const error = document.getElementById('error-msg');
+            const loading = document.getElementById('login-loading');
+            const inputs = document.getElementById('login-inputs');
+
+            if (btoa(u) === AUTH.u && btoa(p) === AUTH.p) {
+                error.style.display = 'none';
+                inputs.style.display = 'none';
+                loading.style.display = 'block';
+                setTimeout(() => {
+                    sessionStorage.setItem('isLoggedIn', 'true');
+                    showMainHub();
+                    showAlert("Authentication Successful.");
+                }, 1500);
+            } else {
+                error.style.display = 'block';
+                document.getElementById('password').value = "";
+                showAlert("Invalid Credentials", "danger");
+            }
+        }
+
+        function handleLogout() { sessionStorage.removeItem('isLoggedIn'); location.reload(); }
+
+        // --- UPDATED TRANSITION NAVIGATION ---
+        function showMainHub() {
+            const login = document.getElementById('login-section');
+            const main = document.getElementById('main-content');
+            login.style.display = 'none';
+            main.style.display = 'block';
+            main.classList.add('slide-in-right');
+        }
+
+        function openModule(id) {
+
+
+            const loader = document.getElementById('module-loader');
+            const lText = document.getElementById('loader-text');
+            const hub = document.getElementById('main-content');
+            const mod = document.getElementById(id);
+
+            lText.innerText = "Connecting to Module...";
+            loader.style.display = 'flex';
+            loader.style.opacity = '1';
+
+            setTimeout(() => {
+                // Start transition
+                hub.classList.add('zoom-out');
+
+                setTimeout(() => {
+                    hub.style.display = 'none';
+                    hub.classList.remove('zoom-out');
+
+                    // Bring in the module
+                    mod.style.display = 'block';
+                    mod.classList.add('zoom-in');
+
+                    // Hide loader with a fade
+                    loader.style.opacity = '0';
+                    setTimeout(() => {
+                        loader.style.display = 'none';
+                        mod.classList.remove('zoom-in');
+                    }, 500);
+
+                    loadRecords();
+                }, 300);
+            }, 1000);
+        }
+
+        function closeModule() {
+            const loader = document.getElementById('module-loader');
+            const lText = document.getElementById('loader-text');
+            const hub = document.getElementById('main-content');
+            const mod = document.getElementById('case-study-module');
+
+            lText.innerText = "Returning to Main Hub...";
+            loader.style.display = 'flex';
+            loader.style.opacity = '1';
+
+            setTimeout(() => {
+                mod.classList.add('zoom-out');
+
+                setTimeout(() => {
+                    mod.style.display = 'none';
+                    mod.classList.remove('zoom-out');
+
+                    hub.style.display = 'block';
+                    hub.classList.add('zoom-in');
+
+                    loader.style.opacity = '0';
+                    setTimeout(() => {
+                        loader.style.display = 'none';
+                        hub.classList.remove('zoom-in');
+                    }, 500);
+                }, 300);
+            }, 800);
+        }
+
+        function showTab(tabId, btnId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+            document.getElementById(tabId).classList.remove('hidden');
+            document.getElementById(btnId).classList.add('active');
+
+            document.getElementById('pagination-controls').style.display =
+                (tabId === 'records-section') ? 'flex' : 'none';
+
+            if (tabId === 'records-section') {
+                currentPage = 1;   // reset page
+                loadRecords();
+            }
+
+            if (tabId === 'stats-section') {
+                calculateStats();
+            }
+        }
+
+        // --- DATA ENGINE ---
+        function saveRecord() {
+            const data = {
+                id: Date.now(),
+                date: document.getElementById('f-date').value,
+                name: document.getElementById('f-name').value.trim(),
+                age: parseInt(document.getElementById('f-age').value),
+                gender: document.getElementById('f-gender').value,
+                barangay: document.getElementById('f-barangay').value.trim(),
+                agency: document.getElementById('f-agency').value.trim(),
+                prepared: document.getElementById('f-prepared').value.trim(),
+                noted: document.getElementById('f-noted').value.trim()
+            };
+
+            if (!data.name || !data.date || isNaN(data.age)) {
+                return showAlert("Incomplete data fields.", "danger");
+            }
+
+            let records = JSON.parse(localStorage.getItem('cswdo_records') || '[]');
+
+            // 🔹 CREATE UNIQUE KEY
+            const makeKey = (r) =>
+                `${r.name.toLowerCase()}|${r.age}|${r.date}|${r.barangay.toLowerCase()}`;
+
+            const newKey = makeKey(data);
+
+            // 🔹 CHECK DUPLICATE
+            const isDuplicate = records.some(r => makeKey(r) === newKey);
+
+            if (isDuplicate) {
+                return showAlert("Duplicate record detected. Entry not saved.", "warning");
+            }
+
+            // ✅ SAVE IF NOT DUPLICATE
+            records.push(data);
+            localStorage.setItem('cswdo_records', JSON.stringify(records));
+
+            showAlert("Case Record Enrolled.");
+
+            // Clear inputs
+            document.querySelectorAll('.form-body input').forEach(i => i.value = "");
+        }
+
+        let currentFilter = 'all';
+        let currentPage = 1;
+        const rowsPerPage = 10;
+
+        function filterRecords(type, btn) {
+            currentFilter = type;
+            currentPage = 1;
+
+            document.querySelectorAll('#records-section .tab-btn')
+                .forEach(b => b.classList.remove('active'));
+
+            btn.classList.add('active');
+
+            loadRecords();
+        }
+
+        function loadRecords() {
+            let records = JSON.parse(localStorage.getItem('cswdo_records') || '[]');
+
+            // FILTERING
+            if (currentFilter === 'minor') {
+                records = records.filter(r => r.age < 18);
+            } else if (currentFilter === 'adult') {
+                records = records.filter(r => r.age >= 18 && r.age < 60);
+            } else if (currentFilter === 'senior') {
+                records = records.filter(r => r.age >= 60);
+            }
+
+            const totalPages = Math.ceil(records.length / rowsPerPage) || 1;
+
+            // FIX page overflow
+            if (currentPage > totalPages) currentPage = totalPages;
+
+            // PAGINATION SLICE
+            const start = (currentPage - 1) * rowsPerPage;
+            const paginated = records.slice(start, start + rowsPerPage);
+
+            const tbody = document.getElementById('records-table-body');
+
+            tbody.innerHTML = paginated.length ? paginated.map(r => `
+        <tr>
+            <td style="font-weight:bold;">${r.date}</td>
+            <td>${r.name}</td>
+            <td>${r.age}</td>
+            <td>${r.gender}</td>
+            <td>${r.barangay}</td>
+            <td>${r.agency || '-'}</td>
+            <td>${r.prepared || '-'}</td>
+            <td>${r.noted || '-'}</td>
+            <td style="text-align:center;">
+                <button onclick="deleteRecord(${r.id})"
+                    style="color:var(--danger); border:none; background:none; cursor:pointer;">
+                    DELETE
+                </button>
+            </td>
+        </tr>
+    `).join('')
+                :
+                `<tr>
+        <td colspan="9" style="text-align:center; padding:40px; color:#7f8c8d;">
+            No records in this category.
+        </td>
+    </tr>`;
+
+            // UPDATE PAGE TEXT
+            document.getElementById('page-info').innerText = `Page ${currentPage} of ${totalPages}`;
+        }
+
+        function nextPage() {
+            currentPage++;
+            loadRecords();
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                loadRecords();
+            }
+        }
+
+        function deleteRecord(id) {
+            showConfirm("Confirm Purge", "Permanently remove this client from the database?", () => {
+                let recs = JSON.parse(localStorage.getItem('cswdo_records')).filter(r => r.id !== id);
+                localStorage.setItem('cswdo_records', JSON.stringify(recs));
+                loadRecords();
+                showAlert("Entry deleted.", "warning");
+            });
+        }
+
+        function exportData() {
+            const data = localStorage.getItem('cswdo_records') || '[]';
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `CSWDO_Export.json`; a.click();
+            showAlert("Export completed.");
+        }
+
+        function importData() {
+            const fileInput = document.getElementById('importFile');
+            if (!fileInput.files[0]) return showAlert("Select a file first.", "warning");
+
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    let current = JSON.parse(localStorage.getItem('cswdo_records') || '[]');
+
+                    showConfirm("Smart Sync", "Only new records will be added. Continue?", () => {
+
+                        // 🔹 Create a signature for comparison
+                        const makeKey = (r) =>
+                            `${r.name}|${r.age}|${r.date}|${r.barangay}`;
+
+                        const existingKeys = new Set(current.map(makeKey));
+
+                        let added = 0;
+
+                        imported.forEach(rec => {
+                            const key = makeKey(rec);
+
+                            if (!existingKeys.has(key)) {
+                                current.push(rec);
+                                existingKeys.add(key);
+                                added++;
+                            }
+                        });
+
+                        localStorage.setItem('cswdo_records', JSON.stringify(current));
+                        loadRecords();
+
+                        showAlert(`${added} new record(s) added.`, "success");
+                    });
+
+                } catch (err) {
+                    showAlert("File corruption error.", "danger");
+                }
+            };
+
+            reader.readAsText(fileInput.files[0]);
+        }
+
+        function calculateStats() {
+            const r = JSON.parse(localStorage.getItem('cswdo_records') || '[]');
+
+            // EXISTING STATS
+            document.getElementById('stat-total').innerText = r.length;
+            document.getElementById('stat-male').innerText = r.filter(x => x.gender === 'Male').length;
+            document.getElementById('stat-female').innerText = r.filter(x => x.gender === 'Female').length;
+
+            document.getElementById('stat-minors').innerText = r.filter(x => x.age < 18).length;
+            document.getElementById('stat-adults').innerText = r.filter(x => x.age >= 18 && x.age < 60).length;
+            document.getElementById('stat-seniors').innerText = r.filter(x => x.age >= 60).length;
+
+            // 🔹 NEW: COUNT PREPARED BY
+            const preparedCounts = {};
+            const notedCounts = {};
+
+            r.forEach(rec => {
+                if (rec.prepared) {
+                    preparedCounts[rec.prepared] = (preparedCounts[rec.prepared] || 0) + 1;
+                }
+                if (rec.noted) {
+                    notedCounts[rec.noted] = (notedCounts[rec.noted] || 0) + 1;
+                }
+            });
+
+            // 🔹 RENDER PREPARED LIST
+            const preparedList = document.getElementById('prepared-list');
+            preparedList.innerHTML = Object.keys(preparedCounts).length
+                ? Object.entries(preparedCounts)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([name, count]) => `
+                <li>
+                    <span>${name}</span>
+                    <strong>${count}</strong>
+                </li>
+            `).join('')
+                : `<li>No data available</li>`;
+
+            // 🔹 RENDER NOTED LIST
+            const notedList = document.getElementById('noted-list');
+            notedList.innerHTML = Object.keys(notedCounts).length
+                ? Object.entries(notedCounts)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([name, count]) => `
+                <li>
+                    <span>${name}</span>
+                    <strong>${count}</strong>
+                </li>
+            `).join('')
+                : `<li>No data available</li>`;
+
+            renderCharts(r);
+
+        }
+
+        window.onload = () => {
+            if (sessionStorage.getItem('isLoggedIn') === 'true') {
+                showMainHub();
+            }
+
+            // 🔹 Ensure correct UI state on load
+            document.getElementById('pagination-controls').style.display = 'none';
+
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                splash.style.opacity = '0';
+                setTimeout(() => splash.style.display = 'none', 800);
+            }, 1800);
+        };
+
+
+    </script>
+</body>
+
+</html>
