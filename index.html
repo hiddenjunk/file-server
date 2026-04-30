@@ -526,13 +526,15 @@
             font-size: 12px;
         }
 
-        /* GENDER STATS */
+        /* STATS ROW */
         .month-stats {
             display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
         }
 
+        /* BADGES */
         .stat-badge {
             padding: 5px 10px;
             border-radius: 20px;
@@ -540,6 +542,7 @@
             font-weight: bold;
         }
 
+        /* COLORS */
         .male {
             background: #d6eaff;
             color: #3498db;
@@ -548,6 +551,21 @@
         .female {
             background: #ffd6ec;
             color: #e84393;
+        }
+
+        .minor {
+            background: #ffeaa7;
+            color: #d35400;
+        }
+
+        .adult {
+            background: #dfe6e9;
+            color: #2d3436;
+        }
+
+        .senior {
+            background: #d1f7c4;
+            color: #27ae60;
         }
 
         /* SECTIONS */
@@ -1544,47 +1562,39 @@
             const notedCounts = {};
 
             r.forEach(rec => {
-                if (rec.prepared) {
-                    preparedCounts[rec.prepared] = (preparedCounts[rec.prepared] || 0) + 1;
-                }
-                if (rec.noted) {
-                    notedCounts[rec.noted] = (notedCounts[rec.noted] || 0) + 1;
-                }
+                if (rec.prepared) preparedCounts[rec.prepared] = (preparedCounts[rec.prepared] || 0) + 1;
+                if (rec.noted) notedCounts[rec.noted] = (notedCounts[rec.noted] || 0) + 1;
             });
 
             document.getElementById('prepared-list').innerHTML =
                 Object.keys(preparedCounts).length
-                    ? Object.entries(preparedCounts)
-                        .sort((a, b) => b[1] - a[1])
-                        .map(([n, c]) => `<li><span>${n}</span><strong>${c}</strong></li>`)
-                        .join('')
+                    ? Object.entries(preparedCounts).sort((a, b) => b[1] - a[1])
+                        .map(([n, c]) => `<li><span>${n}</span><strong>${c}</strong></li>`).join('')
                     : `<li>No data available</li>`;
 
             document.getElementById('noted-list').innerHTML =
                 Object.keys(notedCounts).length
-                    ? Object.entries(notedCounts)
-                        .sort((a, b) => b[1] - a[1])
-                        .map(([n, c]) => `<li><span>${n}</span><strong>${c}</strong></li>`)
-                        .join('')
+                    ? Object.entries(notedCounts).sort((a, b) => b[1] - a[1])
+                        .map(([n, c]) => `<li><span>${n}</span><strong>${c}</strong></li>`).join('')
                     : `<li>No data available</li>`;
 
-            // 🔹 MONTHLY DETAILED STATS
+            // 🔹 MONTHLY STATS
             const monthlyStats = {};
 
             r.forEach(rec => {
                 if (!rec.date) return;
 
                 const d = new Date(rec.date);
-                const key = d.toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long'
-                });
+                const key = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
 
                 if (!monthlyStats[key]) {
                     monthlyStats[key] = {
                         total: 0,
                         male: 0,
                         female: 0,
+                        minors: 0,
+                        adults: 0,
+                        seniors: 0,
                         prepared: {},
                         noted: {}
                     };
@@ -1592,14 +1602,24 @@
 
                 const m = monthlyStats[key];
 
+                // totals
                 m.total++;
+
+                // gender
                 if (rec.gender === 'Male') m.male++;
                 if (rec.gender === 'Female') m.female++;
 
+                // age groups
+                if (rec.age < 18) m.minors++;
+                else if (rec.age < 60) m.adults++;
+                else m.seniors++;
+
+                // prepared
                 if (rec.prepared) {
                     m.prepared[rec.prepared] = (m.prepared[rec.prepared] || 0) + 1;
                 }
 
+                // noted
                 if (rec.noted) {
                     m.noted[rec.noted] = (m.noted[rec.noted] || 0) + 1;
                 }
@@ -1614,12 +1634,12 @@
                     .map(([month, data]) => {
 
                         const prepared = Object.entries(data.prepared)
-                            .map(([n, c]) => `<span class="tag">${n} (${c})</span>`)
-                            .join('') || `<span class="tag">None</span>`;
+                            .map(([n, c]) => `<span class="tag">${n} (${c})</span>`).join('')
+                            || `<span class="tag">None</span>`;
 
                         const noted = Object.entries(data.noted)
-                            .map(([n, c]) => `<span class="tag">${n} (${c})</span>`)
-                            .join('') || `<span class="tag">None</span>`;
+                            .map(([n, c]) => `<span class="tag">${n} (${c})</span>`).join('')
+                            || `<span class="tag">None</span>`;
 
                         return `
             <li class="month-card">
@@ -1631,6 +1651,12 @@
               <div class="month-stats">
                 <div class="stat-badge male">Male: ${data.male}</div>
                 <div class="stat-badge female">Female: ${data.female}</div>
+              </div>
+
+              <div class="month-stats">
+                <div class="stat-badge minor">Minors: ${data.minors}</div>
+                <div class="stat-badge adult">Adults: ${data.adults}</div>
+                <div class="stat-badge senior">Seniors: ${data.seniors}</div>
               </div>
 
               <div class="month-section">
@@ -1647,7 +1673,7 @@
                     }).join('')
                 : `<li>No data available</li>`;
 
-            // 🔹 KEEP YOUR EXISTING CHARTS
+            // 🔹 KEEP YOUR CHARTS
             renderCharts(r);
         }
 
