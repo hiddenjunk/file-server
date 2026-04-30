@@ -484,6 +484,97 @@
             align-items: center;
         }
 
+        /* MONTHLY CARDS */
+        .monthly-cards {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .month-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border-left: 6px solid #3498db;
+            transition: transform 0.2s ease;
+        }
+
+        .month-card:hover {
+            transform: translateY(-3px);
+        }
+
+        /* HEADER */
+        .month-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .month-title {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .month-total {
+            background: #3498db;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        /* GENDER STATS */
+        .month-stats {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .stat-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .male {
+            background: #d6eaff;
+            color: #3498db;
+        }
+
+        .female {
+            background: #ffd6ec;
+            color: #e84393;
+        }
+
+        /* SECTIONS */
+        .month-section {
+            margin-top: 8px;
+        }
+
+        .month-section b {
+            font-size: 12px;
+            color: #555;
+        }
+
+        /* TAGS */
+        .tag-list {
+            margin-top: 5px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .tag {
+            background: #f1f2f6;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+        }
+
         /* --- MODULE TRANSITIONS --- */
         /* --- ENHANCED MODULE TRANSITIONS --- */
         .zoom-in {
@@ -711,7 +802,8 @@
 <body>
 
     <div id="splash-screen">
-        <img src="https://raw.githubusercontent.com/hiddenjunk/file-server/refs/heads/main/CSWD%20logo.png" alt="CSWDO Logo" class="splash-logo" onerror="this.style.display='none'">
+        <img src="https://raw.githubusercontent.com/hiddenjunk/file-server/refs/heads/main/CSWD%20logo.png"
+            alt="CSWDO Logo" class="splash-logo" onerror="this.style.display='none'">
         <div class="loader"></div>
         <p style="margin-top: 15px; color: #555; font-weight: 500;">Connecting to Server...</p>
     </div>
@@ -723,7 +815,8 @@
 
     <div id="login-section">
         <div class="login-card">
-            <img src="https://raw.githubusercontent.com/hiddenjunk/file-server/refs/heads/main/CSWD%20logo.png" style="width: 80px; margin-bottom: 15px;" onerror="this.style.display='none'">
+            <img src="https://raw.githubusercontent.com/hiddenjunk/file-server/refs/heads/main/CSWD%20logo.png"
+                style="width: 80px; margin-bottom: 15px;" onerror="this.style.display='none'">
             <h2>Staff Login</h2>
             <div id="login-loading" style="display: none; margin-bottom: 15px;">
                 <div class="loader" style="width: 25px; height: 25px; margin: 0 auto;"></div>
@@ -904,16 +997,21 @@
                 <button class="btn-util" onclick="nextPage()">Next</button>
             </div>
 
+            <!-- STATISTICS TAB -->
             <div id="stats-section" class="tab-content hidden">
+
+                <!-- TOP STATS -->
                 <div class="stats-grid">
                     <div class="stat-card stat-total">
                         <div class="stat-val" id="stat-total">0</div>
                         <div class="stat-lab">Total Cases</div>
                     </div>
+
                     <div class="stat-card stat-male">
                         <div class="stat-val" id="stat-male" style="color:#3498db">0</div>
                         <div class="stat-lab">Male Clients</div>
                     </div>
+
                     <div class="stat-card stat-female">
                         <div class="stat-val" id="stat-female" style="color:#e84393">0</div>
                         <div class="stat-lab">Female Clients</div>
@@ -925,35 +1023,38 @@
                         <div class="stat-val" id="stat-minors">0</div>
                         <div class="stat-lab">Minors (0-17)</div>
                     </div>
+
                     <div class="stat-card stat-adult">
                         <div class="stat-val" id="stat-adults">0</div>
                         <div class="stat-lab">Adults (18-59)</div>
                     </div>
+
                     <div class="stat-card stat-senior">
                         <div class="stat-val" id="stat-seniors">0</div>
                         <div class="stat-lab">Seniors (60+)</div>
                     </div>
                 </div>
 
+                <!-- CHARTS -->
                 <div class="stats-grid">
-                    <div class="stat-card">
-                        <h4>Monthly Case Trends</h4>
-                        <canvas id="monthlyChart"></canvas>
-                    </div>
-
                     <div class="stat-card">
                         <h4>Cases per Barangay</h4>
                         <canvas id="barangayChart"></canvas>
                     </div>
-                </div>
 
-                <div class="stats-grid">
                     <div class="stat-card">
                         <h4>Top Agencies</h4>
                         <canvas id="agencyChart"></canvas>
                     </div>
                 </div>
 
+                <!-- MONTHLY SUMMARY -->
+                <div class="stat-card">
+                    <h4>Monthly Case Summary</h4>
+                    <ul id="monthly-summary" class="monthly-cards"></ul>
+                </div>
+
+                <!-- PREPARED / NOTED -->
                 <div class="list-container">
                     <div class="category-list">
                         <h4><span class="dot" style="background:#3498db;"></span> Prepared By Count</h4>
@@ -967,6 +1068,7 @@
                 </div>
 
             </div>
+
         </div>
     </div>
 
@@ -1064,11 +1166,23 @@
         }
 
         (function () {
+            function detectDevTools() {
+                const threshold = 160;
+                if (
+                    window.outerWidth - window.innerWidth > threshold ||
+                    window.outerHeight - window.innerHeight > threshold
+                ) {
+                    triggerSecurity();
+                }
+            }
 
             function triggerSecurity() {
                 alert("Developer tools detected. Closing application.");
                 window.location.href = "about:blank";
             }
+
+            // Run detection repeatedly
+            setInterval(detectDevTools, 1000);
 
             // Disable right click
             document.addEventListener('contextmenu', e => e.preventDefault());
@@ -1417,16 +1531,15 @@
         function calculateStats() {
             const r = JSON.parse(localStorage.getItem('cswdo_records') || '[]');
 
-            // EXISTING STATS
+            // 🔹 BASIC COUNTS
             document.getElementById('stat-total').innerText = r.length;
             document.getElementById('stat-male').innerText = r.filter(x => x.gender === 'Male').length;
             document.getElementById('stat-female').innerText = r.filter(x => x.gender === 'Female').length;
-
             document.getElementById('stat-minors').innerText = r.filter(x => x.age < 18).length;
             document.getElementById('stat-adults').innerText = r.filter(x => x.age >= 18 && x.age < 60).length;
             document.getElementById('stat-seniors').innerText = r.filter(x => x.age >= 60).length;
 
-            // 🔹 NEW: COUNT PREPARED BY
+            // 🔹 PREPARED / NOTED COUNTS
             const preparedCounts = {};
             const notedCounts = {};
 
@@ -1439,34 +1552,103 @@
                 }
             });
 
-            // 🔹 RENDER PREPARED LIST
-            const preparedList = document.getElementById('prepared-list');
-            preparedList.innerHTML = Object.keys(preparedCounts).length
-                ? Object.entries(preparedCounts)
-                    .sort((a, b) => b[1] - a[1])
-                    .map(([name, count]) => `
-                <li>
-                    <span>${name}</span>
-                    <strong>${count}</strong>
-                </li>
-            `).join('')
+            document.getElementById('prepared-list').innerHTML =
+                Object.keys(preparedCounts).length
+                    ? Object.entries(preparedCounts)
+                        .sort((a, b) => b[1] - a[1])
+                        .map(([n, c]) => `<li><span>${n}</span><strong>${c}</strong></li>`)
+                        .join('')
+                    : `<li>No data available</li>`;
+
+            document.getElementById('noted-list').innerHTML =
+                Object.keys(notedCounts).length
+                    ? Object.entries(notedCounts)
+                        .sort((a, b) => b[1] - a[1])
+                        .map(([n, c]) => `<li><span>${n}</span><strong>${c}</strong></li>`)
+                        .join('')
+                    : `<li>No data available</li>`;
+
+            // 🔹 MONTHLY DETAILED STATS
+            const monthlyStats = {};
+
+            r.forEach(rec => {
+                if (!rec.date) return;
+
+                const d = new Date(rec.date);
+                const key = d.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long'
+                });
+
+                if (!monthlyStats[key]) {
+                    monthlyStats[key] = {
+                        total: 0,
+                        male: 0,
+                        female: 0,
+                        prepared: {},
+                        noted: {}
+                    };
+                }
+
+                const m = monthlyStats[key];
+
+                m.total++;
+                if (rec.gender === 'Male') m.male++;
+                if (rec.gender === 'Female') m.female++;
+
+                if (rec.prepared) {
+                    m.prepared[rec.prepared] = (m.prepared[rec.prepared] || 0) + 1;
+                }
+
+                if (rec.noted) {
+                    m.noted[rec.noted] = (m.noted[rec.noted] || 0) + 1;
+                }
+            });
+
+            // 🔹 RENDER MONTHLY CARDS
+            const monthlyList = document.getElementById('monthly-summary');
+
+            monthlyList.innerHTML = Object.keys(monthlyStats).length
+                ? Object.entries(monthlyStats)
+                    .sort((a, b) => new Date(a[0]) - new Date(b[0]))
+                    .map(([month, data]) => {
+
+                        const prepared = Object.entries(data.prepared)
+                            .map(([n, c]) => `<span class="tag">${n} (${c})</span>`)
+                            .join('') || `<span class="tag">None</span>`;
+
+                        const noted = Object.entries(data.noted)
+                            .map(([n, c]) => `<span class="tag">${n} (${c})</span>`)
+                            .join('') || `<span class="tag">None</span>`;
+
+                        return `
+            <li class="month-card">
+              <div class="month-header">
+                <div class="month-title">${month}</div>
+                <div class="month-total">${data.total} Cases</div>
+              </div>
+
+              <div class="month-stats">
+                <div class="stat-badge male">Male: ${data.male}</div>
+                <div class="stat-badge female">Female: ${data.female}</div>
+              </div>
+
+              <div class="month-section">
+                <b>Prepared By</b>
+                <div class="tag-list">${prepared}</div>
+              </div>
+
+              <div class="month-section">
+                <b>Noted By</b>
+                <div class="tag-list">${noted}</div>
+              </div>
+            </li>
+          `;
+                    }).join('')
                 : `<li>No data available</li>`;
 
-            // 🔹 RENDER NOTED LIST
-            const notedList = document.getElementById('noted-list');
-            notedList.innerHTML = Object.keys(notedCounts).length
-                ? Object.entries(notedCounts)
-                    .sort((a, b) => b[1] - a[1])
-                    .map(([name, count]) => `
-                <li>
-                    <span>${name}</span>
-                    <strong>${count}</strong>
-                </li>
-            `).join('')
-                : `<li>No data available</li>`;
-
+            // 🔹 KEEP YOUR EXISTING CHARTS
             renderCharts(r);
-
         }
 
         window.onload = () => {
