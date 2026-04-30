@@ -1064,23 +1064,11 @@
         }
 
         (function () {
-            function detectDevTools() {
-                const threshold = 160;
-                if (
-                    window.outerWidth - window.innerWidth > threshold ||
-                    window.outerHeight - window.innerHeight > threshold
-                ) {
-                    triggerSecurity();
-                }
-            }
 
             function triggerSecurity() {
                 alert("Developer tools detected. Closing application.");
                 window.location.href = "about:blank";
             }
-
-            // Run detection repeatedly
-            setInterval(detectDevTools, 1000);
 
             // Disable right click
             document.addEventListener('contextmenu', e => e.preventDefault());
